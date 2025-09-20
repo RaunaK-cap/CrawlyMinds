@@ -7,7 +7,7 @@ export default  defineSchema({
         UserID:v.string(),
         Email:v.string(),
         Name:v.string(),
-        CreatedAt:v.number()
+        
     }).index("by_UserId" , ["UserID"]),       
 
 
@@ -18,7 +18,7 @@ export default  defineSchema({
         Text_Chunk: v.string(),             //text chunks 
         Vectors:v.array(v.float64()),       // vector embeddings of the text chunks 
         source:v.string(),                  // urls ,
-        CreatedAt:v.number()                //created time 
+                                            //created time 
     })
     .vectorIndex("by_embedding" , {          // For Vector indexing/quering 
         vectorField:"Vectors",              // Give  your stored vector access

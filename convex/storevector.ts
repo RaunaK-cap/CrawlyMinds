@@ -34,14 +34,16 @@ export const storeUsersData = mutation({
 
 export const storeEmbeddings = mutation({
     args: {
-        UserId: v.string(),
+        UserId: v.string(), 
         Name: v.string(),
         Text_chunks: v.string(),
         Vectors: v.array(v.float64()),
         source: v.string(),
     },
     handler: async (ctx, args) => {
-
+        
+        const normalizedlink = args.source.trim().toLowerCase();
+        // for user authentication
         const userdata = await ctx.db
             .query("UserSchema")
             .withIndex("by_UserId", q => q.eq("UserID", args.UserId))
@@ -51,12 +53,24 @@ export const storeEmbeddings = mutation({
             throw new Error("user doesn't exist")
         }
 
+        // for duplication link storage
+        
+        const existingDocs = await ctx.db.query("Embedding_vectors")
+        .filter(q => q.eq("UserID", args.UserId))
+        .filter(q => q.eq("source", normalizedlink))
+        .collect();
+  
+            if (existingDocs.length > 0) {
+                console.log("existingDocs does exist" )
+                return
+            };     // skip if already stored
+
         await ctx.db.insert("Embedding_vectors", {
             UserID: args.UserId,
             Name: args.Name,
             Text_Chunk: args.Text_chunks,
             Vectors: args.Vectors,
-            source: args.source,
+            source: normalizedlink,
             
         })
     }

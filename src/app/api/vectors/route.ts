@@ -2,11 +2,15 @@ import { NextRequest, NextResponse } from "next/server";
 import OpenAI from "openai";
 import z from "zod"
 import { CharacterTextSplitter } from "@langchain/textsplitters";
+import { headers } from "next/headers";
+import { auth } from "@/lib/auth";
+
+import { fetchMutation } from "convex/nextjs";
+import { api } from "../../../../convex/_generated/api";      //convex db mutations 
 
 
 const openai = new OpenAI({
-    apiKey: process.env.GEMINI_API_KEY,
-    baseURL: "https://generativelanguage.googleapis.com/v1beta/openai/"
+    apiKey: process.env.OPEN_API_KEY
 });
 
 const textSplitter = new CharacterTextSplitter({
@@ -22,7 +26,7 @@ type LLMschema ={
 
 async function OpenAILLM({model , contents}: LLMschema ){
   const response = await openai.chat.completions.create({
-    model:  model || "gemini-2.0-flash",
+    model:  model || "gpt-4.1-mini",
     messages: [
         { role: "system", content: "You are a helpful assistant.Users will give you website links you have to go through that links and grab the Context,content, text, some important things only and give it back to user with explaining all about it only in 500-600 words and there could be 2-3 links so so do not mix up different links data to each other instead give it separate data for separate links something like link1 : link1-data then link2:link-data  " },
         {
@@ -32,12 +36,17 @@ async function OpenAILLM({model , contents}: LLMschema ){
     ],
 });
 
-  console.log("Crawling Website......")
+console.log("Crawling Website......")
 return response.choices[0].message.content
 
 }
 
-export function GET(){
+export async function GET(){
+  const session = await auth.api.getSession({
+    headers: await headers() // you need to pass the headers object.
+})
+
+  console.log(session.user)
   return NextResponse.json({
     message:"api is working "
   })
@@ -54,14 +63,48 @@ export async function POST(req:NextRequest){
   if(!success){
     return NextResponse.json({message:"please Enter valid links"} , { status:300})
   }
-
+  
+  const normalizedlink = data.links.trim().toLowerCase();
   try {
-     const AI_Responses = await OpenAILLM({contents:data.links})
-     const chunk_text = await textSplitter.splitText(AI_Responses!)
+     const AI_Responses = await OpenAILLM({contents:normalizedlink})
      console.log("chunking text ....")
-     return NextResponse.json({
-        chunk_text
-     })
+     const chunk_text = await textSplitter.splitText(AI_Responses!)
+     console.log(chunk_text.length)
+
+     // now pass this chunk to open AI embedded api to create vectors and  store it on convex db along with user session
+     console.log("Creating Vector Embeddings...") 
+     const embedding = await openai.embeddings.create({
+      model: "text-embedding-3-small",
+      input: chunk_text,
+      encoding_format: "float",
+    });
+    
+    console.log(embedding);
+
+    try {
+      console.log("storing vector and chunks .....")
+
+      for(let i = 0 ; i < chunk_text.length; i++){
+        await fetchMutation(api.storevector.storeEmbeddings ,{
+          Text_chunks:chunk_text[i],
+          Vectors:embedding.data[i].embedding,
+          UserId: "ssioJ3pZHa8WFRYICdx3gzi9fuy0hPqu",  // hard coded session user id and there name 
+          Name:"Raunak",                               // must have to change while hitting end point from client side 
+          source:normalizedlink
+        })
+      }
+      
+      console.log("saved it ..")
+      return NextResponse.json({
+        message:"Vectors has been stored "
+      })
+    } catch (error) {
+      return NextResponse.json({
+        message:"error while storing vector please try again",
+        error
+      })
+    }
+
   } catch (error) {
     return NextResponse.json({
       message:"error "

@@ -13,6 +13,7 @@ import type {
   FilterApi,
   FunctionReference,
 } from "convex/server";
+import type * as queryexisteddata from "../queryexisteddata.js";
 import type * as searchvector from "../searchvector.js";
 import type * as storevector from "../storevector.js";
 
@@ -25,6 +26,7 @@ import type * as storevector from "../storevector.js";
  * ```
  */
 declare const fullApi: ApiFromModules<{
+  queryexisteddata: typeof queryexisteddata;
   searchvector: typeof searchvector;
   storevector: typeof storevector;
 }>;

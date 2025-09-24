@@ -5,7 +5,7 @@ import { CharacterTextSplitter } from "@langchain/textsplitters";
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 
-import { fetchMutation } from "convex/nextjs";
+import { fetchMutation , fetchQuery } from "convex/nextjs";
 import { api } from "../../../../convex/_generated/api";      //convex db mutations 
 
 
@@ -42,11 +42,7 @@ return response.choices[0].message.content
 }
 
 export async function GET(){
-  const session = await auth.api.getSession({
-    headers: await headers() // you need to pass the headers object.
-})
 
-  console.log(session.user)
   return NextResponse.json({
     message:"api is working "
   })
@@ -57,16 +53,31 @@ export async function POST(req:NextRequest){
   const verifiedbody =z.object({
     links:z.string().min(5,"Links must required"),
     model:z.string().optional()
-  })
-   
+  }) 
   const { success , data} = verifiedbody.safeParse(body)
   if(!success){
     return NextResponse.json({message:"please Enter valid links"} , { status:300})
   }
   
   const normalizedlink = data.links.trim().toLowerCase();
+
+  const sourcelinkduplication = await fetchQuery(api.queryexisteddata.getduplictsourcelink , {
+    UserId: "",   // pass user session id here while calling it from client side
+    source:normalizedlink
+  })
+
+  if(sourcelinkduplication.length > 0){
+    return NextResponse.json({
+      message:"data already exist with this link"
+    })
+  }
+
+  
   try {
+      console.log("getting data from website")
+
      const AI_Responses = await OpenAILLM({contents:normalizedlink})
+
      console.log("chunking text ....")
      const chunk_text = await textSplitter.splitText(AI_Responses!)
      console.log(chunk_text.length)
@@ -79,26 +90,45 @@ export async function POST(req:NextRequest){
       encoding_format: "float",
     });
     
-    console.log(embedding);
 
     try {
       console.log("storing vector and chunks .....")
 
+      let storingvectors_result : any[]= []
+
       for(let i = 0 ; i < chunk_text.length; i++){
-        await fetchMutation(api.storevector.storeEmbeddings ,{
+        const dupes = await fetchQuery(api.queryexisteddata.getDuplicateEmbeddings, {
+          UserId: "ssioJ3pZHa8WFRYICdx3gzi9fuy0hPqu",   //pass the user session id while calling it from client side 
+          Name: "Raunak",
+          TextChunk: chunk_text[i],
+          source: normalizedlink,
+        });
+        if (dupes.length > 0) {
+          return NextResponse.json(
+            { message: "Data already exist", },
+            { status: 409 }
+          );
+        }
+          
+
+       const storingvectors =  await fetchMutation(api.storevector.storeEmbeddings ,{
           Text_chunks:chunk_text[i],
           Vectors:embedding.data[i].embedding,
           UserId: "ssioJ3pZHa8WFRYICdx3gzi9fuy0hPqu",  // hard coded session user id and there name 
           Name:"Raunak",                               // must have to change while hitting end point from client side 
           source:normalizedlink
         })
+
+        storingvectors_result.push(storingvectors.message)
       }
       
       console.log("saved it ..")
       return NextResponse.json({
-        message:"Vectors has been stored "
-      })
+        message:storingvectors_result
+      } , { status:200})
+
     } catch (error) {
+      console.log(error)
       return NextResponse.json({
         message:"error while storing vector please try again",
         error
@@ -107,7 +137,7 @@ export async function POST(req:NextRequest){
 
   } catch (error) {
     return NextResponse.json({
-      message:"error "
+      message:"error while getting data from website "
     })
   }
 

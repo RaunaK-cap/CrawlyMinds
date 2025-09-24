@@ -12,12 +12,12 @@ export default  defineSchema({
 
 
     Embedding_vectors : defineTable({
-        
         UserID:v.string(),
         Name:v.string(),
         Text_Chunk: v.string(),             //text chunks 
         Vectors:v.array(v.float64()),       // vector embeddings of the text chunks 
-        source:v.string(),                  // urls ,
+        source:v.string(),  
+                      // urls ,
                                             //created time 
     })
     .vectorIndex("by_embedding" , {          // For Vector indexing/quering 
@@ -26,5 +26,7 @@ export default  defineSchema({
         filterFields:["UserID"]             //For user specific Filteration
                                              
     })
-    .index("by_UserID" , [ "UserID"])      // For Normal indexing/quering 
+    .index("by_UserID" , [ "UserID" ])
+    .index("by_sourcelink" , ["source"])
+    .index("by_user_name_Text_source" , ["UserID" , "Name" , "Text_Chunk", "source"])
 })

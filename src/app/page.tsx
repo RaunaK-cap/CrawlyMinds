@@ -8,14 +8,14 @@ export default function Home() {
   return (
     <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
      <div>
-      <h1> Welcome to Crawl Minds ..</h1>
+      <h1> Welcome to Crawly Minds ..</h1>
 
      </div>
      
     
      
     <Link href={"/login"}>
-     <Button> Start to Crawlminds </Button>
+     <Button> Start to CrawlyMinds </Button>
     </Link>
 
      <div>

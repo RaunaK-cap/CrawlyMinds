@@ -51,9 +51,9 @@ export function LoginForm({
  }
 
   return (
-    <div className={cn("flex flex-col gap-6", className)} {...props}>
+    <div className={cn("flex flex-col gap-6 ", className)} {...props}>
       <form>
-        <div className="flex flex-col gap-6 font-sans">
+        <div className="flex flex-col gap-6 font-sans text-xs">
           <div className="flex flex-col items-center gap-2">
             <a
               href="#"
@@ -109,8 +109,8 @@ export function LoginForm({
         </div>
       </form>
       <div className="text-muted-foreground *:[a]:hover:text-primary text-center text-xs text-balance *:[a]:underline *:[a]:underline-offset-4">
-        By clicking continue, you agree to our <a href="#">Terms of Service</a>{" "}
-        and <a href="#">Privacy Policy</a>.
+        <p className="mb-2"> By </p>
+         Better-Auth + Resend  
       </div>
     </div>
   )

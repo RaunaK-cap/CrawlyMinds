@@ -14,7 +14,7 @@ const openai = new OpenAI({
 });
 
 const ratelimiter = new RateLimiterMemory({
-    points:4,
+    points:1,
     duration:60
 })
 
@@ -29,7 +29,7 @@ export async function POST(req:NextRequest){
     
       } catch {
         return NextResponse.json(
-          { error: "Too many requests" },
+          { responses: "Too many requests" },
           { status: 429 }
         );
       }
@@ -52,9 +52,9 @@ export async function POST(req:NextRequest){
     //1.Converting User Query into Vector embeddings
 
     const embedding = await openai.embeddings.create({
-        model: "text-embedding-3-small",
-        input:  data.message,
-        encoding_format: "float",
+    model: "text-embedding-3-small",
+    input:  data.message,
+    encoding_format: "float",
       });
       
       try{

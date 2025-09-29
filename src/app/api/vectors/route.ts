@@ -49,6 +49,9 @@ export async function GET(){
 }
  
 export async function POST(req:NextRequest){
+  const session = await auth.api.getSession({
+    headers: await headers() // you need to pass the headers object.
+})
   const body = await req.json()
   const verifiedbody =z.object({
     links:z.string().min(5,"Links must required"),
@@ -62,7 +65,7 @@ export async function POST(req:NextRequest){
   const normalizedlink = data.links.trim().toLowerCase();
 
   const sourcelinkduplication = await fetchQuery(api.queryexisteddata.getduplictsourcelink , {
-    UserId: "",   // pass user session id here while calling it from client side
+    UserId: session.user.id,   // pass user session id here while calling it from client side
     source:normalizedlink
   })
 
@@ -98,7 +101,7 @@ export async function POST(req:NextRequest){
 
       for(let i = 0 ; i < chunk_text.length; i++){
         const dupes = await fetchQuery(api.queryexisteddata.getDuplicateEmbeddings, {
-          UserId: "ssioJ3pZHa8WFRYICdx3gzi9fuy0hPqu",   //pass the user session id while calling it from client side 
+          UserId: session.user.id,   //pass the user session id while calling it from client side 
           Name: "Raunak",
           TextChunk: chunk_text[i],
           source: normalizedlink,
@@ -114,7 +117,7 @@ export async function POST(req:NextRequest){
        const storingvectors =  await fetchMutation(api.storevector.storeEmbeddings ,{
           Text_chunks:chunk_text[i],
           Vectors:embedding.data[i].embedding,
-          UserId: "ssioJ3pZHa8WFRYICdx3gzi9fuy0hPqu",  // hard coded session user id and there name 
+          UserId: session.user.id,  // hard coded session user id and there name 
           Name:"Raunak",                               // must have to change while hitting end point from client side 
           source:normalizedlink
         })

@@ -34,6 +34,10 @@ export async function POST(req:NextRequest){
         );
       }
 
+      const session = await auth.api.getSession({
+        headers: await headers() // you need to pass the headers object.
+    })
+
     const body = await req.json()
     const verifiedinput = z.object({
         UserId:z.string().min(1 , "UserId must required").optional(),
@@ -62,7 +66,7 @@ export async function POST(req:NextRequest){
             //2. Vectors search to get similar data 
 
             const similarVectors =  await fetchAction(api.searchvector.similar_vectors, {
-                UserID:"ssioJ3pZHa8WFRYICdx3gzi9fuy0hPqu",  //currently hard code must have to change while calling it from client side 
+                UserID: session.user.id ,  //currently hard code must have to change while calling it from client side 
                 user_query_embeddings: embedding.data[0].embedding
             })
 

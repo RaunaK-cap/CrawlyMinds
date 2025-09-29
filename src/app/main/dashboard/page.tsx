@@ -20,6 +20,8 @@ export default function Page() {
 
       <main className="relative flex  mx-auto flex-col bg-background">
         <ChatPage/>
+       
+        
       </main>
 
     </div>

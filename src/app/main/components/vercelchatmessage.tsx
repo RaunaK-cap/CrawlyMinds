@@ -46,7 +46,7 @@ export default function ChatApp() {
   const endRef = useRef<HTMLDivElement | null>(null);
   const [searchType, setsearchType] = useState("vector");
 
-  // Scroll to bottom when messages change
+  
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
   }, [messages]);
@@ -62,7 +62,7 @@ export default function ChatApp() {
     const text = input.trim();
     if (!text) return;
 
-    // Add the user's message to the chat
+    
     const userMsg: ChatMessage = {
       id: crypto.randomUUID(),
       role: "user",
@@ -74,11 +74,11 @@ export default function ChatApp() {
     setIsReplying(true);
 
     try {
-      // Send the message to your backend
+      
       const res = await axios.post("/api/usersVectors", { message: text });
 
       //CHECK POINT ----------------------
-      // Assume your backend returns something like { reply: "..." }
+      
       const replyMsg: ChatMessage = {
         id: crypto.randomUUID(),
         role: "assistant",
@@ -86,15 +86,11 @@ export default function ChatApp() {
         timestamp: Date.now(),
       };
 
-      // Add the assistant's reply to the chat
+      
       setMessages((prev) => [...prev, replyMsg]);
     } catch (err: any) {
-      console.error(
-        "Error fetching assistant reply:",
-        err.response.data.responses
-      );
       toast(err.response.data.responses);
-      // Show error message in chat
+      
       const errorMsg: ChatMessage = {
         id: crypto.randomUUID(),
         role: "assistant",
@@ -110,7 +106,7 @@ export default function ChatApp() {
 
   return (
     <div className="flex min-h-screen flex-col bg-background text-foreground font-sans">
-      {/* Header */}
+      
       <header className="sticky top-0 z-10 w-full border-b border-border bg-background/80 backdrop-blur">
         <div className="mx-auto flex w-full max-w-2xl items-center gap-3 px-4 py-3">
           <Link href={"/"}>
@@ -125,7 +121,7 @@ export default function ChatApp() {
         </div>
       </header>
 
-      {/* Chat window */}
+      
       <main className="flex flex-1 flex-col">
         <section
           className="flex min-h-50 flex-1 overflow-x-hidden"
@@ -183,7 +179,7 @@ export default function ChatApp() {
         </section>
       </main>
 
-      {/* Composer */}
+
       <form
         className="sticky bottom-0 z-10 w-full border-border bg-background"
         onSubmit={(e) => {

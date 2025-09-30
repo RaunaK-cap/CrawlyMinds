@@ -52,6 +52,12 @@ export async function POST(req:NextRequest){
   const session = await auth.api.getSession({
     headers: await headers() // you need to pass the headers object.
 })
+
+if(!session){
+  return NextResponse.json({
+    message:"unauthorized"
+  })
+}
   const body = await req.json()
   const verifiedbody =z.object({
     links:z.string().min(5,"Links must required"),

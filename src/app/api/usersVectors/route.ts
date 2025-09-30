@@ -7,7 +7,7 @@ import { api } from "../../../../convex/_generated/api";
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 import { RateLimiterMemory } from "rate-limiter-flexible"
-import { redirect } from "next/navigation";
+
 
 
 const openai = new OpenAI({

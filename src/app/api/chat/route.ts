@@ -1,6 +1,5 @@
 import { Agent , run, tool } from '@openai/agents';
 import { fetchAction } from 'convex/nextjs';
-import { get } from 'http';
 import { NextRequest, NextResponse } from 'next/server';
 import z from "zod"
 import { api } from '../../../../convex/_generated/api';
@@ -20,9 +19,9 @@ const ratelimiter = new RateLimiterMemory({
 
 
 const UserWebsitedatafromDatabase = tool({
-  name: 'user_website_data_from_database', // 👈 fixed name (no spaces)
+  name: 'user_website_data_from_database', 
   description: 'Return User specific website links data',
-  parameters: z.object({              // 👈 strict object schema
+  parameters: z.object({              
    query:z.string(),
   }).strict(),
 
@@ -72,21 +71,21 @@ const crawlymindsAgents = new Agent({
 
   if you don't find the data of user website or any related to his website offer them to i can search it internet if you want
   `,
-  model: 'gpt-5-nano', // optional – falls back to the default model
+  model: 'gpt-5-nano', 
   tools:[UserWebsitedatafromDatabase]
 });
 
 
 export async function POST(req:NextRequest){
   const session = await auth.api.getSession({
-    headers: await headers() // you need to pass the headers object.
+    headers: await headers() 
 })
   
 
   try {
     const ip = req.headers.get("x-forwarded-for") || "unknown";
 
-    await ratelimiter.consume(ip); // consume 1 point per request
+    await ratelimiter.consume(ip); 
     
 
   } catch {

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import z from "zod";
 import OpenAI from "openai";
 
-import { fetchAction, fetchMutation, fetchQuery } from "convex/nextjs"
+import { fetchAction,  } from "convex/nextjs"
 import { api } from "../../../../convex/_generated/api";
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
@@ -60,7 +60,7 @@ export async function POST(req: NextRequest) {
         }, { status: 302 })
     }
 
-    console.log(data.message)
+    
     
 
 
@@ -120,7 +120,6 @@ export async function POST(req: NextRequest) {
 
 
     } catch (error) {
-        console.log(error)
         return NextResponse.json({
             message: "error while vector searching",
             error

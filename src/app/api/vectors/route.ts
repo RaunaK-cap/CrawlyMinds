@@ -6,7 +6,7 @@ import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 
 import { fetchMutation , fetchQuery } from "convex/nextjs";
-import { api } from "../../../../convex/_generated/api";      //convex db mutations 
+import { api } from "../../../../convex/_generated/api";      
 
 
 const openai = new OpenAI({
@@ -50,7 +50,7 @@ export async function GET(){
  
 export async function POST(req:NextRequest){
   const session = await auth.api.getSession({
-    headers: await headers() // you need to pass the headers object.
+    headers: await headers() 
 })
 
 if(!session){
@@ -71,7 +71,7 @@ if(!session){
   const normalizedlink = data.links.trim().toLowerCase();
 
   const sourcelinkduplication = await fetchQuery(api.queryexisteddata.getduplictsourcelink , {
-    UserId: session.user.id,   // pass user session id here while calling it from client side
+    UserId: session.user.id,   
     source:normalizedlink
   })
 
@@ -91,7 +91,8 @@ if(!session){
      const chunk_text = await textSplitter.splitText(AI_Responses!)
      console.log(chunk_text.length)
 
-     // now pass this chunk to open AI embedded api to create vectors and  store it on convex db along with user session
+
+     
      console.log("Creating Vector Embeddings...") 
      const embedding = await openai.embeddings.create({
       model: "text-embedding-3-small",
@@ -107,7 +108,7 @@ if(!session){
 
       for(let i = 0 ; i < chunk_text.length; i++){
         const dupes = await fetchQuery(api.queryexisteddata.getDuplicateEmbeddings, {
-          UserId: session.user.id,   //pass the user session id while calling it from client side 
+          UserId: session.user.id,    
           Name: "Raunak",
           TextChunk: chunk_text[i],
           source: normalizedlink,
@@ -123,8 +124,8 @@ if(!session){
        const storingvectors =  await fetchMutation(api.storevector.storeEmbeddings ,{
           Text_chunks:chunk_text[i],
           Vectors:embedding.data[i].embedding,
-          UserId: session.user.id,  // hard coded session user id and there name 
-          Name:"Raunak",                               // must have to change while hitting end point from client side 
+          UserId: session.user.id,   
+          Name:"Raunak",                                
           source:normalizedlink
         })
 
@@ -137,7 +138,6 @@ if(!session){
       } , { status:200})
 
     } catch (error) {
-      console.log(error)
       return NextResponse.json({
         message:"error while storing vector please try again",
         error

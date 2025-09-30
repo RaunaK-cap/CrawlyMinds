@@ -6,6 +6,8 @@ import z from "zod"
 import { api } from '../../../../convex/_generated/api';
 import OpenAI from 'openai';
 import { RateLimiterMemory} from "rate-limiter-flexible"
+import { headers } from "next/headers";
+import { auth } from "@/lib/auth";
 
 const openai = new OpenAI({
   apiKey: process.env.OPEN_API_KEY
@@ -13,7 +15,7 @@ const openai = new OpenAI({
 
 const ratelimiter = new RateLimiterMemory({
   points:3,
-  duration:30
+  duration:180
 })
 
 
@@ -27,7 +29,7 @@ const UserWebsitedatafromDatabase = tool({
   
   async execute({ query }) {
 
-    console.log("calling database for data ")
+    // console.log("calling database for data ")
     const embedding = await openai.embeddings.create({
       model: "text-embedding-3-small",
       input: query,
@@ -39,15 +41,15 @@ const UserWebsitedatafromDatabase = tool({
       user_query_embeddings: embedding.data[0].embedding,
     });
 
-    if (!similarVectors) {
+    if (!similarVectors || similarVectors.length === 0) {
       return { message: "data doesn't exist" };
     }
 
     const contextchunks = similarVectors
-      .map((data) => {data.Text_Chunk})
+      .map((data) => `Chunk: ${data.Text_Chunk}\nSource: ${data.source}`)
       .join("\n\n");
 
-      console.log(contextchunks)
+
 
     return contextchunks;
   },
@@ -76,6 +78,10 @@ const crawlymindsAgents = new Agent({
 
 
 export async function POST(req:NextRequest){
+  const session = await auth.api.getSession({
+    headers: await headers() // you need to pass the headers object.
+})
+  
 
   try {
     const ip = req.headers.get("x-forwarded-for") || "unknown";
@@ -89,6 +95,14 @@ export async function POST(req:NextRequest){
       { status: 429 }
     );
   }
+    
+
+  if(!session){
+    return NextResponse.json({
+      message:"unauthorized"
+    })
+  }
+  
   const { query} = await req.json()
 
   const result = await run( crawlymindsAgents , query)

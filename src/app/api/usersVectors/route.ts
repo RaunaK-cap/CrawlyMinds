@@ -80,7 +80,7 @@ export async function POST(req:NextRequest){
          
             // 3. LLM Calls .....
 
-            const contextchunks = similarVectors.map((data)=> data.Text_Chunk).join("\n\n")
+            const contextchunks = similarVectors.map((data)=> { data.source , data.Text_Chunk}).join("\n\n")
             
 
             let Context = `your are a helpfull AI assistant for Crawlyminds. Users will ask question about his website link and you will recieve the all context data/summary/similiar data of that website links ,based on that you have to create a humans friendly answer to users , only give answer according to data you will recieved. most important part if you don't recieved any data then simply say data doesn't exist and here's your all website/links data starts: 

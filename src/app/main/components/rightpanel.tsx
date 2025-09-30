@@ -46,7 +46,7 @@ export function RightPanel() {
     pushLog(" Getting Data from links ....");
     try {
       const res = await axios.post("/api/vectors", { links: data.link1, })
-      // just test with console.log
+      
       pushLog(res.data.message)
       await new Promise((r) => setTimeout(r, 1500));
       pushLog("Organizing data .... ");
@@ -57,8 +57,8 @@ export function RightPanel() {
       pushLog("  Now you can chat with it  .. ");
       reset();
     } catch (error) {
-      pushLog("❌ Error saving links. Check console.");
-      console.error("Error saving links:", error);
+      pushLog(" Error saving links.");
+      
     } finally {
       setLoading(false);
     }

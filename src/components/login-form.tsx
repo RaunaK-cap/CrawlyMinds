@@ -20,7 +20,7 @@ export function LoginForm({
      startisgithub(async()=>{
       await authClient.signIn.social({
         provider:"github",
-        callbackURL:"/dashboard",
+        callbackURL:"/main/dashboard",
         fetchOptions:{
           onSuccess: ()=>{
             toast("successfully login")

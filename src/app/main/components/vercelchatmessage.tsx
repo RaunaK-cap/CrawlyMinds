@@ -1,11 +1,25 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { BrainCircuit } from "lucide-react";
+import {
+  BrainCircuit,
+  GlobeIcon,
+  Search,
+  SendHorizonalIcon,
+} from "lucide-react";
 import Link from "next/link";
 import { Theme_Toggler } from "@/components/toggler_theme";
 import { RightPanel } from "./rightpanel";
 import axios from "axios";
+import { toast } from "sonner";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
 
 type ChatRole = "user" | "assistant";
 
@@ -30,6 +44,7 @@ export default function ChatApp() {
   const textAreaRef = useRef<HTMLTextAreaElement | null>(null);
   const scrollerRef = useRef<HTMLDivElement | null>(null);
   const endRef = useRef<HTMLDivElement | null>(null);
+  const [searchType, setsearchType] = useState("vector");
 
   // Scroll to bottom when messages change
   useEffect(() => {
@@ -40,6 +55,8 @@ export default function ChatApp() {
     () => input.trim().length > 0 && !isReplying,
     [input, isReplying]
   );
+
+  type SearchType = "vector" | "ai-agents" | "global";
 
   const handleSend = useCallback(async () => {
     const text = input.trim();
@@ -59,6 +76,7 @@ export default function ChatApp() {
     try {
       // Send the message to your backend
       const res = await axios.post("/api/usersVectors", { message: text });
+
       //CHECK POINT ----------------------
       // Assume your backend returns something like { reply: "..." }
       const replyMsg: ChatMessage = {
@@ -70,9 +88,12 @@ export default function ChatApp() {
 
       // Add the assistant's reply to the chat
       setMessages((prev) => [...prev, replyMsg]);
-    } catch (err) {
-      console.error("Error fetching assistant reply:", err);
-
+    } catch (err: any) {
+      console.error(
+        "Error fetching assistant reply:",
+        err.response.data.responses
+      );
+      toast(err.response.data.responses);
       // Show error message in chat
       const errorMsg: ChatMessage = {
         id: crypto.randomUUID(),
@@ -127,9 +148,7 @@ export default function ChatApp() {
                     <div
                       className={[
                         "flex max-w-[80%] flex-col gap-1 rounded-lg border px-3 py-2 text-sm",
-                        isUser
-                          ? "ml-auto bg-background"
-                          : "mr-auto bg-muted ",
+                        isUser ? "ml-auto bg-background" : "mr-auto bg-muted ",
                       ].join(" ")}
                       style={
                         isUser
@@ -173,8 +192,8 @@ export default function ChatApp() {
         }}
         aria-label="Chat composer"
       >
-        <div className="mx-auto w-full max-w-3xl px-4 py-3">
-          <div className="flex items-end gap-2 rounded-lg border bg-background px-3 py-2">
+        <div className="mx-auto w-full max-w-3xl px-4 py-3 sm:mb-5 mb-4  ">
+          <div className="flex flex-col items-end gap-2 rounded-lg border bg-background px-3 py-2">
             <label htmlFor="chat-input" className="sr-only">
               Message input
             </label>
@@ -183,9 +202,9 @@ export default function ChatApp() {
               ref={textAreaRef}
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="Message the assistant"
+              placeholder="Ask anythings about website ..."
               rows={1}
-              className="min-h-10 max-h-50 w-full resize-none p-1 text-sm text-foreground outline-none placeholder:text-muted-foreground"
+              className="min-h-10 max-h-50 w-full mb-4 resize-none p-1 text-sm text-foreground outline-none placeholder:text-muted-foreground"
               onKeyDown={(e) => {
                 if (e.key === "Enter" && !e.shiftKey) {
                   e.preventDefault();
@@ -194,17 +213,38 @@ export default function ChatApp() {
               }}
               aria-disabled={isReplying || undefined}
             />
-            <button
+
+            
+            <div className="flex items-center justify-end gap-2">
+
+              
+              <Select defaultValue="vector"
+                onValueChange={(value) => setsearchType(value as SearchType)}
+              >
+                <SelectTrigger className="  bg-neutral-100  border-none  size-28 text-xs">
+                  <SelectValue placeholder="Search" />
+                  <GlobeIcon className="size-4 " />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="vector">Vector Search</SelectItem>
+                  <SelectItem value="global">Global Search</SelectItem>
+                  <SelectItem value="ai-agents">AI Agent</SelectItem>
+                </SelectContent>
+              </Select>
+
+              <Button
               type="submit"
               disabled={!canSend}
+              variant={"outline"}
               className={[
-                "inline-flex h-9 shrink-0 items-center justify-center rounded-md px-3 text-sm font-medium border border-border",
-                canSend ? "bg-yellow-500" : "opacity-50",
+                "flex items-center justify-center   ",
+                canSend ? "" : "opacity-50",
               ].join(" ")}
               aria-label="Send message"
             >
-              Send
-            </button>
+              {<SendHorizonalIcon className="size-4 flex items-center" />}
+            </Button>
+            </div>
           </div>
         </div>
       </form>

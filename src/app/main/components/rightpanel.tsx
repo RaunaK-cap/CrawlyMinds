@@ -56,7 +56,7 @@ export function RightPanel() {
 
       pushLog("  Now you can chat with it  .. ");
       reset();
-    } catch (error) {
+    } catch {
       pushLog(" Error saving links.");
       
     } finally {

@@ -4,7 +4,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   BrainCircuit,
   GlobeIcon,
-  Search,
   SendHorizonalIcon,
 } from "lucide-react";
 import Link from "next/link";
@@ -45,7 +44,6 @@ export default function ChatApp() {
   const scrollerRef = useRef<HTMLDivElement | null>(null);
   const endRef = useRef<HTMLDivElement | null>(null);
   const [searchType, setsearchType] = useState("vector");
-  const [loading, setLoading] = useState(false);
 
   // 🔥 Credits state (start with 3)
   const [credits, setCredits] = useState<number | null>(3); // 3 max
@@ -54,10 +52,10 @@ export default function ChatApp() {
     endRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
   }, [messages]);
 
-  // 🔥 Disable send when no credits or already replying/loading
+  // 🔥 Disable send when no credits or already replying
   const canSend = useMemo(
-    () => input.trim().length > 0 && !loading && (credits ?? 1) > 0,
-    [input, loading, credits]
+    () => input.trim().length > 0 && !isReplying && (credits ?? 1) > 0,
+    [input, isReplying, credits]
   );
 
   type SearchType = "vector" | "ai-agents" | "global";
@@ -99,13 +97,18 @@ export default function ChatApp() {
       };
   
       setMessages((prev) => [...prev, replyMsg]);
-    } catch (err: any) {
+    } catch (err) {
       // 🔥 If rate-limit error (credits exhausted)
-      if (err?.response?.status === 429) {
-        setCredits(0); // set credits to 0
-        toast("No credits left. Please try again later.");
+      if (err instanceof Error && 'response' in err) {
+        const axiosError = err as { response?: { status?: number; data?: { responses?: string } } };
+        if (axiosError.response?.status === 429) {
+          setCredits(0); // set credits to 0
+          toast("No credits left. Please try again later.");
+        } else {
+          toast(axiosError.response?.data?.responses || "Unexpected error");
+        }
       } else {
-        toast(err?.response?.data?.responses || "Unexpected error");
+        toast("Unexpected error");
       }
       const errorMsg: ChatMessage = {
         id: crypto.randomUUID(),

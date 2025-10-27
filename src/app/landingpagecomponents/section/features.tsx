@@ -1,4 +1,4 @@
-import { Brain, BrainCog, CloudAlertIcon, Database, DatabaseZap, InspectIcon, LockKeyhole, Scale3d, SectionIcon, ShieldCheck, SplitIcon } from "lucide-react"
+import { Brain, BrainCog, CloudAlertIcon, Database, DatabaseZap, InspectIcon, Scale3d, ShieldCheck, SplitIcon } from "lucide-react"
 import { ScrollReveal } from "../UI/scroll-reveal"
 
 const features = [
@@ -31,7 +31,7 @@ export function FeaturesSection() {
         </ScrollReveal>
 
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {features.map((f, i) => (
+          {features.map((f) => (
             <ScrollReveal key={f.k} >
               <article className="h-full rounded-xl border border-border p-5 transition hover:-translate-y-1 hover:shadow-md">
                 <div className="mb-3 h-6 w-6 rounded-md text-red-400" > {f.i} </div>

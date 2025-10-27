@@ -104,7 +104,7 @@ if(!session){
     try {
       console.log("storing vector and chunks .....")
 
-      let storingvectors_result : any[]= []
+      const storingvectors_result : string[]= []
 
       for(let i = 0 ; i < chunk_text.length; i++){
         const dupes = await fetchQuery(api.queryexisteddata.getDuplicateEmbeddings, {
@@ -137,14 +137,13 @@ if(!session){
         message:storingvectors_result
       } , { status:200})
 
-    } catch (error) {
+    } catch {
       return NextResponse.json({
-        message:"error while storing vector please try again",
-        error
+        message:"error while storing vector please try again"
       })
     }
 
-  } catch (error) {
+  } catch {
     return NextResponse.json({
       message:"error while getting data from website "
     })

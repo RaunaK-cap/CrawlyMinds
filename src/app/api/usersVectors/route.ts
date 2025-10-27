@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import z from "zod";
 import OpenAI from "openai";
 
-import { fetchAction,  } from "convex/nextjs"
+import { fetchAction } from "convex/nextjs"
 import { api } from "../../../../convex/_generated/api";
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
@@ -105,7 +105,7 @@ export async function POST(req: NextRequest) {
 
 
 
-        let Context = `your are a helpfull AI assistant for Crawlyminds. Users will ask question about his website link and you will recieve the all context data/summary/similiar data of that website links ,based on that you have to create a humans friendly answer to users , only give answer according to data you will recieved. most important part if you don't recieved any data then simply say data doesn't exist and here's your all website/links data starts: 
+        const Context = `your are a helpfull AI assistant for Crawlyminds. Users will ask question about his website link and you will recieve the all context data/summary/similiar data of that website links ,based on that you have to create a humans friendly answer to users , only give answer according to data you will recieved. most important part if you don't recieved any data then simply say data doesn't exist and here's your all website/links data starts: 
             ${contextchunks}`
 
         //4. Feeding all similar data to LLM 

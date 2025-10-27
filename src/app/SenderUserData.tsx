@@ -6,10 +6,10 @@ import { useEffect } from 'react'
 
 
 const SenderUserData = () => {
-    const { data: session , error } = authClient.useSession()
+    const { data: session } = authClient.useSession()
     const SendingUsersData_toConvex = useMutation(api.storevector.storeUsersData)
     useEffect(()=>{
-        if(session?.user.id){
+        if(session?.user.id && session?.user.email && session?.user.name){
             SendingUsersData_toConvex({
                 UserID:session?.user.id,
                 Email:session?.user.email,
@@ -18,7 +18,7 @@ const SenderUserData = () => {
             console.log("Userdata sent to Convex DB ")
         }
 
-    } , [session?.user.id])
+    } , [session?.user.id, session?.user.email, session?.user.name, SendingUsersData_toConvex])
 
 
   return null

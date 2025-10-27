@@ -31,7 +31,7 @@ export function TechStackSection() {
         </ScrollReveal>
         <ScrollReveal>
           <ul className="grid grid-cols-2 items-center gap-6 sm:grid-cols-3 md:grid-cols-3">
-            {tech.map((t, i) => (
+            {tech.map((t) => (
               <li key={t.name} className="flex items-center justify-center">
                 {/* <Image
                   src={"/"}

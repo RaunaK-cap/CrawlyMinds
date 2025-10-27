@@ -1,6 +1,5 @@
 import { Theme_Toggler } from "@/components/toggler_theme";
 import { Button } from "@/components/ui/button";
-import Image from "next/image";
 import Link from "next/link";
 import { HeroSection } from "./landingpagecomponents/section/hero";
 import { HowItWorksSection } from "./landingpagecomponents/section/how's-its-work";

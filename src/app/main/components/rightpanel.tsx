@@ -70,7 +70,7 @@ export function RightPanel() {
         <Button
           variant="outline"
           size="sm"
-          className="dark:bg-yellow-500 dark:text-black"
+          className=""
         >
           Add Link
         </Button>
@@ -89,7 +89,7 @@ export function RightPanel() {
           onSubmit={handleSubmit(onSubmit)}
           className="grid flex-1 auto-rows-min gap-6 px-4"
         >
-          {/* Link 1 */}
+       
           <div className="grid gap-2">
             <Label htmlFor="link1">Link: 1</Label>
             <Input
@@ -104,7 +104,7 @@ export function RightPanel() {
 
           {/* Link 2 */}
           <div className="grid gap-2">
-            <Label htmlFor="link2">Link: 2</Label>
+            <Label htmlFor="link2">Link: 2  (Optional) </Label>
             <Input
               id="link2"
               placeholder="Enter link..."
@@ -115,8 +115,7 @@ export function RightPanel() {
             )}
           </div>
 
-          {/* Logs Section */}
-          {/* Logs Section */}
+          
           <div className="rounded-md p-3 text-sm min-h-[60px] space-y-3">
             {logs.length > 0 ? (
               logs.map((log, idx) => (

@@ -11,13 +11,15 @@ import { RateLimiterMemory } from "rate-limiter-flexible"
 
 
 const openai = new OpenAI({
-    apiKey: process.env.OPEN_API_KEY
+    apiKey: process.env.OPENAI_API_KEY
 });
 
 const ratelimiter = new RateLimiterMemory({
-    points: 5,
-    duration: 60
+    points: 3,
+    duration: 180
 })
+
+let returnRemaining = null
 
 
 export async function POST(req: NextRequest) {
@@ -25,7 +27,9 @@ export async function POST(req: NextRequest) {
     try {
         const ip = req.headers.get("x-forwarded-for") || "unknown";
 
-        await ratelimiter.consume(ip); // consume 1 point per request
+        const rlRes = await ratelimiter.consume(ip); // consume 1 point per request
+
+        returnRemaining = rlRes.remainingPoints; 
 
 
     } catch {
@@ -44,6 +48,12 @@ export async function POST(req: NextRequest) {
             responses:"unauthorized"
         }, {
             status:402
+        })
+    }
+
+    if(returnRemaining=== 0){
+        return NextResponse.json({
+            remaining: returnRemaining
         })
     }
 
@@ -115,7 +125,8 @@ export async function POST(req: NextRequest) {
 
         return NextResponse.json({
             message: "Your Answer .. ",
-            responses: response.choices[0].message.content
+            responses: response.choices[0].message.content,
+            remaining: returnRemaining
         })
 
 

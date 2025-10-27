@@ -10,7 +10,7 @@ import { api } from "../../../../convex/_generated/api";
 
 
 const openai = new OpenAI({
-    apiKey: process.env.OPEN_API_KEY
+    apiKey: process.env.OPENAI_API_KEY
 });
 
 const textSplitter = new CharacterTextSplitter({

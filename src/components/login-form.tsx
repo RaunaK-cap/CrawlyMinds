@@ -37,7 +37,7 @@ export function LoginForm({
     startisgoogle(async()=>{
      await authClient.signIn.social({
        provider:"google",
-       callbackURL:"/dashboard",
+       callbackURL:"/main/dashboard",
        fetchOptions:{
          onSuccess: ()=>{
            toast("successfully login")

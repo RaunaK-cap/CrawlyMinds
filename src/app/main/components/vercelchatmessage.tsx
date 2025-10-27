@@ -45,15 +45,19 @@ export default function ChatApp() {
   const scrollerRef = useRef<HTMLDivElement | null>(null);
   const endRef = useRef<HTMLDivElement | null>(null);
   const [searchType, setsearchType] = useState("vector");
+  const [loading, setLoading] = useState(false);
 
-  
+  // 🔥 Credits state (start with 3)
+  const [credits, setCredits] = useState<number | null>(3); // 3 max
+
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
   }, [messages]);
 
+  // 🔥 Disable send when no credits or already replying/loading
   const canSend = useMemo(
-    () => input.trim().length > 0 && !isReplying,
-    [input, isReplying]
+    () => input.trim().length > 0 && !loading && (credits ?? 1) > 0,
+    [input, loading, credits]
   );
 
   type SearchType = "vector" | "ai-agents" | "global";
@@ -61,8 +65,7 @@ export default function ChatApp() {
   const handleSend = useCallback(async () => {
     const text = input.trim();
     if (!text) return;
-
-    
+  
     const userMsg: ChatMessage = {
       id: crypto.randomUUID(),
       role: "user",
@@ -72,25 +75,38 @@ export default function ChatApp() {
     setMessages((prev) => [...prev, userMsg]);
     setInput("");
     setIsReplying(true);
-
+  
     try {
-      
-      const res = await axios.post("/api/usersVectors", { message: text });
+      let res;
+  
+      // 🔥 Switch backend depending on searchType
+      if (searchType === "ai-agents") {
+        res = await axios.post("/api/chat", { query: text });
+      } else if (searchType === "vector") {
+        res = await axios.post("/api/usersVectors", { message: text });
+      } 
 
-      //CHECK POINT ----------------------
-      
+      // 🔥 Update credits from backend response
+      if (res?.data?.remaining !== undefined) {
+        setCredits(res.data.remaining);
+      }
+  
       const replyMsg: ChatMessage = {
         id: crypto.randomUUID(),
         role: "assistant",
-        content: res.data.responses || "Sorry, I couldn't get a response.",
+        content: res?.data?.responses || "Sorry, I couldn't get a response.",
         timestamp: Date.now(),
       };
-
-      
+  
       setMessages((prev) => [...prev, replyMsg]);
     } catch (err: any) {
-      toast(err.response.data.responses);
-      
+      // 🔥 If rate-limit error (credits exhausted)
+      if (err?.response?.status === 429) {
+        setCredits(0); // set credits to 0
+        toast("No credits left. Please try again later.");
+      } else {
+        toast(err?.response?.data?.responses || "Unexpected error");
+      }
       const errorMsg: ChatMessage = {
         id: crypto.randomUUID(),
         role: "assistant",
@@ -102,7 +118,8 @@ export default function ChatApp() {
       setIsReplying(false);
       setTimeout(() => textAreaRef.current?.focus(), 0);
     }
-  }, [input]);
+  }, [input, searchType]);
+  
 
   return (
     <div className="flex min-h-screen flex-col bg-background text-foreground font-sans">
@@ -117,6 +134,8 @@ export default function ChatApp() {
           <div className="ml-auto text-xs flex items-center gap-2">
             <Theme_Toggler />
             <RightPanel />
+
+            
           </div>
         </div>
       </header>
@@ -198,7 +217,7 @@ export default function ChatApp() {
               ref={textAreaRef}
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="Ask anythings about website ..."
+              placeholder="Ask anythings about websites ..."
               rows={1}
               className="min-h-10 max-h-50 w-full mb-4 resize-none p-1 text-sm text-foreground outline-none placeholder:text-muted-foreground"
               onKeyDown={(e) => {
@@ -213,6 +232,10 @@ export default function ChatApp() {
             
             <div className="flex items-center justify-end gap-2">
 
+            <div className="text-xs px-3 bg-red-500 py-1 rounded text-white">
+              Credits left: {credits !== null ? credits : "-"}
+            </div>
+
               
               <Select defaultValue="vector"
                 onValueChange={(value) => setsearchType(value as SearchType)}
@@ -223,14 +246,13 @@ export default function ChatApp() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="vector">Vector Search</SelectItem>
-                  <SelectItem value="global">Global Search</SelectItem>
                   <SelectItem value="ai-agents">AI Agent</SelectItem>
                 </SelectContent>
               </Select>
 
               <Button
               type="submit"
-              disabled={!canSend}
+              disabled={!canSend} // 🔥 disables button if no credits or loading
               variant={"outline"}
               className={[
                 "flex items-center justify-center   ",

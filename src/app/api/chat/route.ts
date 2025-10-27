@@ -9,7 +9,7 @@ import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 
 const openai = new OpenAI({
-  apiKey: process.env.OPEN_API_KEY
+  apiKey: process.env.OPENAI_API_KEY
 });
 
 const ratelimiter = new RateLimiterMemory({

@@ -15,8 +15,7 @@ const features = [
   { k: "auth", title: "Secure Authentication", desc: "Better Auth with OTP via Resend.", note: "Login + OTP" , i: <ShieldCheck/>},
   { k: "emb", title: " Vectors Embeddings", desc: "Fast embedding workflows for content.", note: "Batch-friendly" ,i:<SplitIcon/> },
   { k: "rl", title: "Rate Limiting", desc: "Custom logic to protect resources.", note: "Abuse prevention" , i:<CloudAlertIcon/> },
-  { k: "vapi", title: "Vapi", desc: "AI voice Agents", note: "voice agent " , i:<Scale3d/>},
-  { k: "Inkeep", title: "Inkeep", desc: "AI agents ", note: "Agents" , i: <Brain/> },
+  { k: "openAI", title: "openAI", desc: "AI agents ", note: "Agents" , i: <Brain/> },
 ]
 
 export function FeaturesSection() {

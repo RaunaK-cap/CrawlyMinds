@@ -12,9 +12,6 @@ const tech = [
   { name: "Convex Db", img: "/convexdb.png", desc: "Everything your product deserves to build launch and scale ",  link:"https://www.convex.dev/", w: 300, h: 200 },
   { name: "Primsa", img: "/prisma.png", desc: " ORM for both SQL/NO-SQL database", link:"https://www.prisma.io/", w: 300, h: 200 },
   { name: "OpenAI API's", img: "/openai.png", desc: "Various models of API's ", link:"https://openai.com/api/", w: 250, h: 200 },
-  { name: "Firecrawl / GPT4.1 API ", img: "/firecrawl.png", desc: "Crawl & Scrap websites ", link:"https://firecrawl.dev/", w: 250, h: 200 },
-  { name: "Vapi", img: "/vapi.png", desc: " Voice AI Agents ",  link:"https://vapi.ai/", w: 300, h: 200 },
-  { name: "Inkeep ", img: "/Inkeep.png", desc: " AI Agents", link:"https://inkeep.com/", w: 300, h: 200 },
 ];
 
 export function TechStackSection() {

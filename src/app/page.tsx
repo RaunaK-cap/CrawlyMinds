@@ -74,7 +74,7 @@ export default function Home() {
 
       <WhySection />
 
-      <CTASection />
+    
 
       <SiteFooter />
     </div>

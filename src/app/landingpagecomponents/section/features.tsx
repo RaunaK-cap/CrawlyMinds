@@ -1,4 +1,4 @@
-import { Brain, BrainCog, CloudAlertIcon, Database, DatabaseZap, InspectIcon, Scale3d, ShieldCheck, SplitIcon } from "lucide-react"
+import { Brain, BrainCog, CloudAlertIcon, Database, DatabaseZap, InspectIcon, ShieldCheck, SplitIcon } from "lucide-react"
 import { ScrollReveal } from "../UI/scroll-reveal"
 
 const features = [

@@ -1,19 +1,13 @@
 import { Theme_Toggler } from "@/components/toggler_theme";
-import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { HeroSection } from "./landingpagecomponents/section/hero";
 import { HowItWorksSection } from "./landingpagecomponents/section/how's-its-work";
 import { FeaturesSection } from "./landingpagecomponents/section/features";
 import { TechStackSection } from "./landingpagecomponents/section/tech-stack";
 import { WhySection } from "./landingpagecomponents/section/why";
-import { CTASection } from "./landingpagecomponents/section/cta";
 import { SiteFooter } from "./landingpagecomponents/section/footer";
 import { BrainCircuit } from "lucide-react";
 
-
-<Link href={"/login"}>
-  <Button> Start to CrawlyMinds </Button>
-</Link>;
 export default function Home() {
   return (
     <div className="min-h-screen font-sans">

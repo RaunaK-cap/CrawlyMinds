@@ -18,7 +18,7 @@ export function WhySection() {
               a smart, searchable knowledge base powered by AI. It crawls
               through the site, understands the content, and lets you chat
               naturally to get instant, accurate answers — all grounded in the
-              site's real data. <br/> <br/>  It&apos;s built to make research, learning, and
+              site's real data. <br/> <br/> Its built to make research, learning, and
               content exploration faster and smarter. Whether you're analyzing
               documentation, doing product research, or studying online
               material, CrawlyMinds helps you extract insights instantly —

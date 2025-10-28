@@ -10,7 +10,7 @@ export function WhySection() {
               Why CrawlyMinds?
             </h2>
           </ScrollReveal>
-          <br/>
+          <br />
           <ScrollReveal>
             <p className="mt-3 text-pretty text-sm leading-relaxed text-muted-foreground md:text-base">
               Tired of scrolling through endless web pages just to find one
@@ -18,8 +18,8 @@ export function WhySection() {
               a smart, searchable knowledge base powered by AI. It crawls
               through the site, understands the content, and lets you chat
               naturally to get instant, accurate answers — all grounded in the
-              site's real data. <br/> <br/> Its built to make research, learning, and
-              content exploration faster and smarter. Whether you're analyzing
+              site&apos;s real data. <br /> <br /> It&apos;s built to make research, learning, and
+              content exploration faster and smarter. Whether you&apos;re analyzing
               documentation, doing product research, or studying online
               material, CrawlyMinds helps you extract insights instantly —
               powered by LangChain, OpenAI, and a full RAG (Retrieval-Augmented
